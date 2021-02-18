@@ -465,7 +465,7 @@ class HomeState extends State<Home> {
         SizedBox(
           height: device.size.height*0.78,
           width: device.size.width,
-          child: people.length==0 ? Center(
+          child: items.length==0 ? Center(
             child: Text(
               "What things you buy",
               style: TextStyle(
@@ -898,6 +898,7 @@ class HomeState extends State<Home> {
                                       ),
                                       onPressed: () {
                                         setState(() {
+                                          item.removeItem();
                                           items.remove(item);
                                         });
                                         Navigator.of(context).pop();

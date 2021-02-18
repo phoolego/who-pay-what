@@ -45,13 +45,13 @@ class _CustomDropdownState extends State<CustomDropdown> {
       return Positioned(
         left: MediaQuery.of(context).size.width*0.1,
         width: MediaQuery.of(context).size.width*0.8,
-        top: yPosition + height,
+        top: yPosition<MediaQuery.of(context).size.height*0.5 ? yPosition + height: yPosition - MediaQuery.of(context).size.height*0.3 - 20,
         height: MediaQuery.of(context).size.height*0.3 + 20,
         child: Container(
           // color: Colors.blue,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            children: [
+            children: yPosition<MediaQuery.of(context).size.height*0.5?[
               SizedBox(
                 height: 20,
                 width: MediaQuery.of(context).size.width*0.8,
@@ -64,10 +64,32 @@ class _CustomDropdownState extends State<CustomDropdown> {
                   ),
                 ),
               ),
+              // Container(
+              //   height: 20,
+              //   color: Color(0xFFfc8621),
+              // ),
               SizedBox(
                 height: MediaQuery.of(context).size.height*0.3,
                 width: MediaQuery.of(context).size.width*0.8,
                 child: AddPersonList(),
+              ),
+            ]:[
+              SizedBox(
+                height: MediaQuery.of(context).size.height*0.3,
+                width: MediaQuery.of(context).size.width*0.8,
+                child: AddPersonList(),
+              ),
+              SizedBox(
+                height: 20,
+                width: MediaQuery.of(context).size.width*0.8,
+                child: ClipPath(
+                  clipper: ArrowClipperDown(center: xPosition+(width/2)-MediaQuery.of(context).size.width*0.1),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Color(0xFFfc8621),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -104,11 +126,15 @@ class _CustomDropdownState extends State<CustomDropdown> {
               height: MediaQuery.of(context).size.height*0.3-30,
               child: widget.localPeople.length==0? Container(
                 child: Center(
-                  child:Text(
-                    "No more person to add",
-                    style: TextStyle(
-                      color: Color(0xFF682c0e),
-                      fontSize: 15,
+                  child:Card(
+                    color: Color(0xFFfc8621),
+                    elevation: 0,
+                    child: Text(
+                      "No more person to add",
+                      style: TextStyle(
+                        color: Color(0xFF682c0e),
+                        fontSize: 15,
+                      ),
                     ),
                   ),
                 ),

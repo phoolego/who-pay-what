@@ -43,4 +43,9 @@ class Item {
     }
     return items;
   }
+  removeItem(){
+    for(Person p in payers){
+      p.pay -= price/payers.length;
+    }
+  }
 }
