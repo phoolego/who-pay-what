@@ -16,7 +16,7 @@ class Person{
       int size = i.payers.length;
       for(Person p in i.payers){
         if(p.name == name){
-          pay+=i.price/size;
+          pay+=i.calPrice()/size;
           break;
         }
       }

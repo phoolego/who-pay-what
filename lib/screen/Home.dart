@@ -23,7 +23,7 @@ class HomeState extends State<Home> {
     print(people.length.toString());
     people = Person.fullSort(people);
 
-    items.add(Item(name: "ไอติม", price: 70));
+    items.add(Item(name: "ไอติม", rawPrice: 70,unit: 1));
     items[0].addPayer(people[0]);
     items[0].addPayer(people[1]);
     for(Person p in people){
@@ -428,11 +428,11 @@ class HomeState extends State<Home> {
                                 for(Item i in items){
                                   if(i.payers.contains(person)){
                                     for(Person p in i.payers){
-                                      p.pay -= i.price/i.payers.length;
+                                      p.pay -= i.getPricePerPerson();
                                     }
                                     i.payers.remove(person);
                                     for(Person p in i.payers){
-                                      p.pay += i.price/i.payers.length;
+                                      p.pay += i.getPricePerPerson();
                                     }
                                   }
                                 }
@@ -517,7 +517,27 @@ class HomeState extends State<Home> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Text(
+                              items[index].unit.toString() + " Unit",
+                              style: TextStyle(
+                                  color: Color(0xFFFFFFFF),
+                                  fontSize: 16
+                              ),
+                            ),
+                            SizedBox(width: 15,),
+                            Text(
                               items[index].getPrice().toString(),
+                              style: TextStyle(
+                                  color: Color(0xFFFFFFFF),
+                                  fontSize: 16
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              items[index].getPricePerPerson().toString()+ " per person",
                               style: TextStyle(
                                   color: Color(0xFFFFFFFF),
                                   fontSize: 16
@@ -570,6 +590,7 @@ class HomeState extends State<Home> {
   inputItemAlert(BuildContext context){
     String name;
     double price;
+    int unit=1;
     final _formKey = GlobalKey<FormState>();
     return showDialog(
         context: context,
@@ -580,7 +601,7 @@ class HomeState extends State<Home> {
                 borderRadius:BorderRadius.circular(20.0)
             ), //this right here
             child: Container(
-              height: MediaQuery.of(context).size.height*0.41,
+              height: MediaQuery.of(context).size.height*0.46,
               child: Padding(
                 padding: EdgeInsets.all(15.0),
                 child: Column(
@@ -691,6 +712,50 @@ class HomeState extends State<Home> {
                               },
                             ),
                           ),
+                          SizedBox(height: 15),
+                          SizedBox(
+                            width: 280,
+                            child: TextFormField(
+                              keyboardType: TextInputType.number,
+                              initialValue: unit.toString(),
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                              ],
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  gapPadding: 0,
+                                ),
+                                contentPadding: EdgeInsets.all(10),
+                                labelText: "Unit",
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  gapPadding: 0,
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.red,width: 2),
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  gapPadding: 0,
+                                ),
+                              ),
+                              validator: (String value) {
+                                if(double.parse(value, (e) => null) == null){//check numberic
+                                  return "invalid number format";
+                                }else if (double.parse(value)<0) {
+                                  return 'unit must be 0 or more';
+                                }else {
+                                  return null;
+                                }
+                              },
+                              onChanged: (val){
+                                unit = int.parse(val);
+                              },
+                            ),
+                          ),
                           SizedBox(height: 20),
                           SizedBox(
                             width: 300.0,
@@ -703,7 +768,7 @@ class HomeState extends State<Home> {
                               ),
                               onPressed: () {
                                 if (_formKey.currentState.validate()){
-                                  items.add(new Item(name: name,price: price));
+                                  items.add(new Item(name: name,rawPrice: price,unit: unit));
                                   Item.sortNameAfterAdd(items);
                                   Navigator.of(context).pop();
                                 }
@@ -726,7 +791,8 @@ class HomeState extends State<Home> {
   }
   editItemAlert(BuildContext context,Item item){
     String name=item.name;
-    double price = item.price;
+    double price = item.rawPrice;
+    int unit = item.unit;
     final _formKey = GlobalKey<FormState>();
     return showDialog(
         context: context,
@@ -737,7 +803,7 @@ class HomeState extends State<Home> {
                 borderRadius:BorderRadius.circular(20.0)
             ), //this right here
             child: Container(
-              height: MediaQuery.of(context).size.height*0.46,
+              height: MediaQuery.of(context).size.height*0.50,
               child: Padding(
                 padding: EdgeInsets.all(15.0),
                 child: Column(
@@ -747,7 +813,7 @@ class HomeState extends State<Home> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Edit name",style: TextStyle(color: Color(0xFF682c0e)),),
+                        Text("Edit Item detail",style: TextStyle(color: Color(0xFF682c0e)),),
                         SizedBox(
                           width: 30,
                           child: MaterialButton(
@@ -761,10 +827,11 @@ class HomeState extends State<Home> {
                       ],
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height*0.34,
+                      height: MediaQuery.of(context).size.height*0.36,
                       child: ListView(
                         shrinkWrap: true,
                         children: [
+                          SizedBox(height: 5,),
                           Form(
                             key: _formKey,
                               child: Column(
@@ -857,6 +924,50 @@ class HomeState extends State<Home> {
                                       },
                                     ),
                                   ),
+                                  SizedBox(height: 15),
+                                  SizedBox(
+                                    width: 280,
+                                    child: TextFormField(
+                                      keyboardType: TextInputType.number,
+                                      initialValue: unit.toString(),
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                      ],
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(20.0),
+                                          gapPadding: 0,
+                                        ),
+                                        contentPadding: EdgeInsets.all(10),
+                                        labelText: "Unit",
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
+                                          borderRadius: BorderRadius.circular(20.0),
+                                          gapPadding: 0,
+                                        ),
+                                        focusedErrorBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.red,width: 2),
+                                          borderRadius: BorderRadius.circular(20.0),
+                                          gapPadding: 0,
+                                        ),
+                                      ),
+                                      validator: (String value) {
+                                        if(double.parse(value, (e) => null) == null){//check numberic
+                                          return "invalid number format";
+                                        }else if (double.parse(value)<0) {
+                                          return 'unit must be 0 or more';
+                                        }else {
+                                          return null;
+                                        }
+                                      },
+                                      onChanged: (val){
+                                        unit = int.parse(val);
+                                      },
+                                    ),
+                                  ),
                                   SizedBox(height: 20),
                                   SizedBox(
                                     width: 300.0,
@@ -871,10 +982,11 @@ class HomeState extends State<Home> {
                                         if (_formKey.currentState.validate()){
                                           item.name = name;
                                           for(Person p in item.payers){
-                                            p.pay -= item.price/item.payers.length;
-                                            p.pay += price/item.payers.length;
+                                            p.pay -= item.getPricePerPerson();
+                                            p.pay += price*unit/item.payers.length;
                                           }
-                                          item.price = price;
+                                          item.rawPrice = price;
+                                          item.unit = unit;
                                           Item.fullSort(items);
                                           Navigator.of(context).pop();
                                         }
@@ -949,11 +1061,11 @@ class HomeState extends State<Home> {
                 onTap: (){
                   setState(() {
                     for(Person person in item.payers){
-                      person.pay -= item.price/item.payers.length;
+                      person.pay -= item.calPrice()/item.payers.length;
                     }
                     item.payers.remove(p);
                     for(Person person in item.payers){
-                      person.pay += item.price/item.payers.length;
+                      person.pay += item.calPrice()/item.payers.length;
                     }
                   });
                 },

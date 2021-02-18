@@ -166,11 +166,11 @@ class _CustomDropdownState extends State<CustomDropdown> {
             print(widget.localPeople[index].name);
             widget.parent.setState(() {
               for(Person p in widget.item.payers){
-                p.pay-= widget.item.price/widget.item.payers.length;
+                p.pay-= widget.item.calPrice()/widget.item.payers.length;
               }
               widget.item.payers.add(widget.localPeople[index]);
               for(Person p in widget.item.payers){
-                p.pay+= widget.item.price/widget.item.payers.length;
+                p.pay+= widget.item.calPrice()/widget.item.payers.length;
               }
             });
             setState(() {

@@ -5,10 +5,12 @@ import 'ThaiSort.dart';
 
 class Item {
   String name;
-  double price;
+  double rawPrice;
+  int unit=1;
+
   List<Person> payers = new List<Person>();
 
-  Item({this.name,this.price});
+  Item({this.name,this.rawPrice,this.unit});
 
   addPayer(Person payer){
     payers.add(payer);
@@ -16,9 +18,19 @@ class Item {
   removePayer(Person payer){
     payers.remove(payer);
   }
+  calPrice(){
+    return rawPrice*unit;
+  }
   getPrice(){
     double mod = pow(10.0, 2);
-    return ((price * mod).round().toDouble() / mod);
+    return ((calPrice() * mod).round().toDouble() / mod);
+  }
+  getPricePerPerson(){
+    double mod = pow(10.0, 2);
+    if(payers.length==0){
+      return getPrice();
+    }
+    return ((calPrice()/payers.length * mod).round().toDouble() / mod);
   }
 
   static sortNameAfterAdd(List<Item> items){
@@ -45,7 +57,7 @@ class Item {
   }
   removeItem(){
     for(Person p in payers){
-      p.pay -= price/payers.length;
+      p.pay -= getPricePerPerson();
     }
   }
 }
