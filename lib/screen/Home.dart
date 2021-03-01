@@ -230,73 +230,80 @@ class HomeState extends State<Home> {
                     ),
                     Form(
                       key: _formKey,
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            width: 280,
-                            child: TextFormField(
-                              style: TextStyle(
-                                fontSize: 18,
-                              ),
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
+                      child: Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: 280,
+                              child: TextFormField(
+                                style: TextStyle(
+                                  fontSize: 18,
                                 ),
-                                contentPadding: EdgeInsets.all(10),
-                                labelText: "Name",
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    gapPadding: 0,
+                                  ),
+                                  contentPadding: EdgeInsets.all(10),
+                                  labelText: "Name",
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    gapPadding: 0,
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red,width: 2),
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    gapPadding: 0,
+                                  ),
                                 ),
-                                focusedErrorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red,width: 2),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
-                                ),
-                              ),
-                              validator: (String value) {
-                                if (value.isEmpty) {
-                                  return 'Name is a required filed.';
-                                } else {
-                                  for(Person p in people){
-                                    if(p.name.toLowerCase() == value.toLowerCase()){
-                                      return "Name is already use.";
+                                validator: (String value) {
+                                  if (value.isEmpty) {
+                                    return 'Name is a required filed.';
+                                  } else {
+                                    for(Person p in people){
+                                      if(p.name.toLowerCase() == value.toLowerCase()){
+                                        return "Name is already use.";
+                                      }
                                     }
+                                    return null;
                                   }
-                                  return null;
-                                }
-                              },
-                              onChanged: (val){
-                                name = val;
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          SizedBox(
-                            width: 300.0,
-                            height: 50,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0)
-                                  )
-                              ),
-                              onPressed: () {
-                                if (_formKey.currentState.validate()){
-                                  people.add(new Person(name: name,pay: 0));
-                                  people = Person.sortNameAfterAdd(people);
-                                  Navigator.of(context).pop();
-                                }
-                              },
-                              child: Text(
-                                "Save",
-                                style: TextStyle(color: Color(0xFF682c0e),fontSize: 16),
+                                },
+                                onChanged: (val){
+                                  name = val;
+                                },
                               ),
                             ),
-                          )
-                        ],
+                            Column(
+                              children: [
+                                SizedBox(height: 20),
+                                SizedBox(
+                                  width: 300.0,
+                                  height: 50,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20.0)
+                                        )
+                                    ),
+                                    onPressed: () {
+                                      if (_formKey.currentState.validate()){
+                                        people.add(new Person(name: name,pay: 0));
+                                        people = Person.sortNameAfterAdd(people);
+                                        Navigator.of(context).pop();
+                                      }
+                                    },
+                                    child: Text(
+                                      "Save",
+                                      style: TextStyle(color: Color(0xFF682c0e),fontSize: 16),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -343,110 +350,117 @@ class HomeState extends State<Home> {
                   ),
                   Form(
                     key: _formKey,
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          width: 280,
-                          child: TextFormField(
-                            style: TextStyle(
-                              fontSize: 18,
-                            ),
-                            initialValue: name,
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.all(10),
-                              labelText: "Name",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                                gapPadding: 0,
+                    child: Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: 280,
+                            child: TextFormField(
+                              style: TextStyle(
+                                fontSize: 18,
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                borderRadius: BorderRadius.circular(20.0),
-                                gapPadding: 0,
+                              initialValue: name,
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.all(10),
+                                labelText: "Name",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  gapPadding: 0,
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  gapPadding: 0,
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.red,width: 2),
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  gapPadding: 0,
+                                ),
                               ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.red,width: 2),
-                                borderRadius: BorderRadius.circular(20.0),
-                                gapPadding: 0,
-                              ),
-                            ),
-                            validator: (String value) {
-                              if(name.toLowerCase()==person.name.toLowerCase()){
-                                return null;
-                              } else if (value.isEmpty) {
-                                return 'Name is a required filed.';
-                              } else {
-                                for(Person p in people){
-                                  if(p.name.toLowerCase() == value.toLowerCase()){
-                                    return "Name is already use.";
-                                  }
-                                }
-                                return null;
-                              }
-                            },
-                            onChanged: (val){
-                              name = val;
-                            },
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        SizedBox(
-                          width: 300.0,
-                          height: 50,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0)
-                                )
-                            ),
-                            onPressed: () {
-                              if (_formKey.currentState.validate()){
-                                person.name = name;
-                                Person.fullSort(people);
-                                Navigator.of(context).pop();
-                              }
-                            },
-                            child: Text(
-                              "Save",
-                              style: TextStyle(color: Color(0xFF682c0e),fontSize: 16),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 15),
-                        SizedBox(
-                          width: 300.0,
-                          height: 50,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              primary: Color(0xFF682c0e),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                for(Item i in items){
-                                  if(i.payers.contains(person)){
-                                    for(Person p in i.payers){
-                                      p.pay -= i.getPricePerPerson();
-                                    }
-                                    i.payers.remove(person);
-                                    for(Person p in i.payers){
-                                      p.pay += i.getPricePerPerson();
+                              validator: (String value) {
+                                if(name.toLowerCase()==person.name.toLowerCase()){
+                                  return null;
+                                } else if (value.isEmpty) {
+                                  return 'Name is a required filed.';
+                                } else {
+                                  for(Person p in people){
+                                    if(p.name.toLowerCase() == value.toLowerCase()){
+                                      return "Name is already use.";
                                     }
                                   }
+                                  return null;
                                 }
-                                people.remove(person);
-                              });
-                              Navigator.of(context).pop();
-                            },
-                            child: Text(
-                              "Delete",
-                              style: TextStyle(color: Colors.white,fontSize: 16),
+                              },
+                              onChanged: (val){
+                                name = val;
+                              },
                             ),
                           ),
-                        ),
-                      ],
+                          Column(
+                            children: [
+                              SizedBox(height: 20),
+                              SizedBox(
+                                width: 300.0,
+                                height: 50,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(20.0)
+                                      )
+                                  ),
+                                  onPressed: () {
+                                    if (_formKey.currentState.validate()){
+                                      person.name = name;
+                                      Person.fullSort(people);
+                                      Navigator.of(context).pop();
+                                    }
+                                  },
+                                  child: Text(
+                                    "Save",
+                                    style: TextStyle(color: Color(0xFF682c0e),fontSize: 16),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 15),
+                              SizedBox(
+                                width: 300.0,
+                                height: 50,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                    ),
+                                    primary: Color(0xFF682c0e),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      for(Item i in items){
+                                        if(i.payers.contains(person)){
+                                          for(Person p in i.payers){
+                                            p.pay -= i.getPricePerPerson();
+                                          }
+                                          i.payers.remove(person);
+                                          for(Person p in i.payers){
+                                            p.pay += i.getPricePerPerson();
+                                          }
+                                        }
+                                      }
+                                      people.remove(person);
+                                    });
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    "Delete",
+                                    style: TextStyle(color: Colors.white,fontSize: 16),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -601,7 +615,7 @@ class HomeState extends State<Home> {
                 borderRadius:BorderRadius.circular(20.0)
             ), //this right here
             child: Container(
-              height: MediaQuery.of(context).size.height*0.46,
+              height: MediaQuery.of(context).size.height*0.5,
               child: Padding(
                 padding: EdgeInsets.all(15.0),
                 child: Column(
@@ -626,160 +640,171 @@ class HomeState extends State<Home> {
                     ),
                     Form(
                       key: _formKey,
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            width: 280,
-                            child: TextFormField(
-                              style: TextStyle(
-                                fontSize: 18,
-                              ),
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
+                      child: Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              children: [
+                                SizedBox(
+                                  width: 280,
+                                  child: TextFormField(
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        gapPadding: 0,
+                                      ),
+                                      contentPadding: EdgeInsets.all(10),
+                                      labelText: "Name",
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        gapPadding: 0,
+                                      ),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.red,width: 2),
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        gapPadding: 0,
+                                      ),
+                                    ),
+                                    validator: (String value) {
+                                      if (value.isEmpty) {
+                                        return 'Name is a required filed.';
+                                      } else {
+                                        for(Person p in people){
+                                          if(p.name.toLowerCase() == value.toLowerCase()){
+                                            return "Name is already use.";
+                                          }
+                                        }
+                                        return null;
+                                      }
+                                    },
+                                    onChanged: (val){
+                                      name = val;
+                                    },
+                                  ),
                                 ),
-                                contentPadding: EdgeInsets.all(10),
-                                labelText: "Name",
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
+                                SizedBox(height: 15),
+                                SizedBox(
+                                  width: 280,
+                                  child: TextFormField(
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: <TextInputFormatter>[
+                                      // FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                    ],
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        gapPadding: 0,
+                                      ),
+                                      contentPadding: EdgeInsets.all(10),
+                                      labelText: "Price",
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        gapPadding: 0,
+                                      ),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.red,width: 2),
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        gapPadding: 0,
+                                      ),
+                                    ),
+                                    validator: (String value) {
+                                      if(double.parse(value, (e) => null) == null){//check numberic
+                                        return "invalid number format";
+                                      }else if (double.parse(value)<0) {
+                                        return 'price must be 0 or more';
+                                      }else {
+                                        return null;
+                                      }
+                                    },
+                                    onChanged: (val){
+                                      price = double.parse(val);
+                                    },
+                                  ),
                                 ),
-                                focusedErrorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red,width: 2),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
+                                SizedBox(height: 15),
+                                SizedBox(
+                                  width: 280,
+                                  child: TextFormField(
+                                    keyboardType: TextInputType.number,
+                                    initialValue: unit.toString(),
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                    ],
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        gapPadding: 0,
+                                      ),
+                                      contentPadding: EdgeInsets.all(10),
+                                      labelText: "Unit",
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        gapPadding: 0,
+                                      ),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.red,width: 2),
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        gapPadding: 0,
+                                      ),
+                                    ),
+                                    validator: (String value) {
+                                      if(double.parse(value, (e) => null) == null){//check numberic
+                                        return "invalid number format";
+                                      }else if (double.parse(value)<0) {
+                                        return 'unit must be 0 or more';
+                                      }else {
+                                        return null;
+                                      }
+                                    },
+                                    onChanged: (val){
+                                      unit = int.parse(val);
+                                    },
+                                  ),
                                 ),
-                              ),
-                              validator: (String value) {
-                                if (value.isEmpty) {
-                                  return 'Name is a required filed.';
-                                } else {
-                                  for(Person p in people){
-                                    if(p.name.toLowerCase() == value.toLowerCase()){
-                                      return "Name is already use.";
-                                    }
-                                  }
-                                  return null;
-                                }
-                              },
-                              onChanged: (val){
-                                name = val;
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 15),
-                          SizedBox(
-                            width: 280,
-                            child: TextFormField(
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                // FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
                               ],
-                              style: TextStyle(
-                                fontSize: 18,
-                              ),
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
-                                ),
-                                contentPadding: EdgeInsets.all(10),
-                                labelText: "Price",
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
-                                ),
-                                focusedErrorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red,width: 2),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
-                                ),
-                              ),
-                              validator: (String value) {
-                                if(double.parse(value, (e) => null) == null){//check numberic
-                                  return "invalid number format";
-                                }else if (double.parse(value)<0) {
-                                  return 'price must be 0 or more';
-                                }else {
-                                  return null;
-                                }
-                              },
-                              onChanged: (val){
-                                price = double.parse(val);
-                              },
                             ),
-                          ),
-                          SizedBox(height: 15),
-                          SizedBox(
-                            width: 280,
-                            child: TextFormField(
-                              keyboardType: TextInputType.number,
-                              initialValue: unit.toString(),
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                            Column(
+                              children: [
+                                SizedBox(height: 20),
+                                SizedBox(
+                                  width: 300.0,
+                                  height: 50,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20.0)
+                                        )
+                                    ),
+                                    onPressed: () {
+                                      if (_formKey.currentState.validate()){
+                                        items.add(new Item(name: name,rawPrice: price,unit: unit));
+                                        Item.sortNameAfterAdd(items);
+                                        Navigator.of(context).pop();
+                                      }
+                                    },
+                                    child: Text(
+                                      "Save",
+                                      style: TextStyle(color: Color(0xFF682c0e),fontSize: 16),
+                                    ),
+                                  ),
+                                )
                               ],
-                              style: TextStyle(
-                                fontSize: 18,
-                              ),
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
-                                ),
-                                contentPadding: EdgeInsets.all(10),
-                                labelText: "Unit",
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
-                                ),
-                                focusedErrorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red,width: 2),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
-                                ),
-                              ),
-                              validator: (String value) {
-                                if(double.parse(value, (e) => null) == null){//check numberic
-                                  return "invalid number format";
-                                }else if (double.parse(value)<0) {
-                                  return 'unit must be 0 or more';
-                                }else {
-                                  return null;
-                                }
-                              },
-                              onChanged: (val){
-                                unit = int.parse(val);
-                              },
                             ),
-                          ),
-                          SizedBox(height: 20),
-                          SizedBox(
-                            width: 300.0,
-                            height: 50,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0)
-                                  )
-                              ),
-                              onPressed: () {
-                                if (_formKey.currentState.validate()){
-                                  items.add(new Item(name: name,rawPrice: price,unit: unit));
-                                  Item.sortNameAfterAdd(items);
-                                  Navigator.of(context).pop();
-                                }
-                              },
-                              child: Text(
-                                "Save",
-                                style: TextStyle(color: Color(0xFF682c0e),fontSize: 16),
-                              ),
-                            ),
-                          )
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -801,233 +826,237 @@ class HomeState extends State<Home> {
             backgroundColor:Color(0xFFf9e0ae),
             shape: RoundedRectangleBorder(
                 borderRadius:BorderRadius.circular(20.0)
-            ), //this right here
-            child: Container(
-              height: MediaQuery.of(context).size.height*0.50,
-              child: Padding(
-                padding: EdgeInsets.all(15.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Edit Item detail",style: TextStyle(color: Color(0xFF682c0e)),),
-                        SizedBox(
-                          width: 30,
-                          child: MaterialButton(
-                            padding: EdgeInsets.all(0),
-                            child: Icon(Icons.close),
-                            onPressed: (){
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height*0.36,
-                      child: ListView(
-                        shrinkWrap: true,
+            ),
+            child: SingleChildScrollView(
+              child: Container(
+                height: MediaQuery.of(context).size.height*0.60,
+                child: Padding(
+                  padding: EdgeInsets.all(15.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(height: 5,),
-                          Form(
-                            key: _formKey,
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                    width: 280,
-                                    child: TextFormField(
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                      ),
-                                      initialValue: name,
-                                      decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.all(10),
-                                        labelText: "Name",
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          gapPadding: 0,
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          gapPadding: 0,
-                                        ),
-                                        focusedErrorBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.red,width: 2),
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          gapPadding: 0,
-                                        ),
-                                      ),
-                                      validator: (String value) {
-                                        if(name.toLowerCase()==item.name.toLowerCase()){
-                                          return null;
-                                        } else if (value.isEmpty) {
-                                          return 'Name is a required filed.';
-                                        } else {
-                                          for(Item i in items){
-                                            if(i.name.toLowerCase() == value.toLowerCase()){
-                                              return "Name is already use.";
-                                            }
-                                          }
-                                          return null;
-                                        }
-                                      },
-                                      onChanged: (val){
-                                        name = val;
-                                      },
-                                    ),
-                                  ),
-                                  SizedBox(height: 15,),
-                                  SizedBox(
-                                    width: 280,
-                                    child: TextFormField(
-                                      initialValue: price.toString(),
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: <TextInputFormatter>[
-                                        // FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
-                                      ],
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                      ),
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          gapPadding: 0,
-                                        ),
-                                        contentPadding: EdgeInsets.all(10),
-                                        labelText: "Price",
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          gapPadding: 0,
-                                        ),
-                                        focusedErrorBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.red,width: 2),
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          gapPadding: 0,
-                                        ),
-                                      ),
-                                      validator: (String value) {
-                                        if(double.parse(value, (e) => null) == null){//check numberic
-                                          return "invalid number format";
-                                        }else if (double.parse(value)<0) {
-                                          return 'price must be 0 or more';
-                                        }else {
-                                          return null;
-                                        }
-                                      },
-                                      onChanged: (val){
-                                        price = double.parse(val);
-                                      },
-                                    ),
-                                  ),
-                                  SizedBox(height: 15),
-                                  SizedBox(
-                                    width: 280,
-                                    child: TextFormField(
-                                      keyboardType: TextInputType.number,
-                                      initialValue: unit.toString(),
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
-                                      ],
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                      ),
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          gapPadding: 0,
-                                        ),
-                                        contentPadding: EdgeInsets.all(10),
-                                        labelText: "Unit",
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          gapPadding: 0,
-                                        ),
-                                        focusedErrorBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.red,width: 2),
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          gapPadding: 0,
-                                        ),
-                                      ),
-                                      validator: (String value) {
-                                        if(double.parse(value, (e) => null) == null){//check numberic
-                                          return "invalid number format";
-                                        }else if (double.parse(value)<0) {
-                                          return 'unit must be 0 or more';
-                                        }else {
-                                          return null;
-                                        }
-                                      },
-                                      onChanged: (val){
-                                        unit = int.parse(val);
-                                      },
-                                    ),
-                                  ),
-                                  SizedBox(height: 20),
-                                  SizedBox(
-                                    width: 300.0,
-                                    height: 50,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(20.0)
-                                          )
-                                      ),
-                                      onPressed: () {
-                                        if (_formKey.currentState.validate()){
-                                          item.name = name;
-                                          for(Person p in item.payers){
-                                            p.pay -= item.getPricePerPerson();
-                                            p.pay += price*unit/item.payers.length;
-                                          }
-                                          item.rawPrice = price;
-                                          item.unit = unit;
-                                          Item.fullSort(items);
-                                          Navigator.of(context).pop();
-                                        }
-                                      },
-                                      child: Text(
-                                        "Save",
-                                        style: TextStyle(color: Color(0xFF682c0e),fontSize: 16),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 15),
-                                  SizedBox(
-                                    width: 300.0,
-                                    height: 50,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(20.0),
-                                        ),
-                                        primary: Color(0xFF682c0e),
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          item.removeItem();
-                                          items.remove(item);
-                                        });
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text(
-                                        "Delete",
-                                        style: TextStyle(color: Colors.white,fontSize: 16),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                          Text("Edit Item detail",style: TextStyle(color: Color(0xFF682c0e)),),
+                          SizedBox(
+                            width: 30,
+                            child: MaterialButton(
+                              padding: EdgeInsets.all(0),
+                              child: Icon(Icons.close),
+                              onPressed: (){
+                                Navigator.of(context).pop();
+                              },
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                      Form(
+                        key: _formKey,
+                          child: Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  children: [
+                                    SizedBox(
+                                      width: 280,
+                                      child: TextFormField(
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                        initialValue: name,
+                                        decoration: InputDecoration(
+                                          contentPadding: EdgeInsets.all(10),
+                                          labelText: "Name",
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(20.0),
+                                            gapPadding: 0,
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
+                                            borderRadius: BorderRadius.circular(20.0),
+                                            gapPadding: 0,
+                                          ),
+                                          focusedErrorBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(color: Colors.red,width: 2),
+                                            borderRadius: BorderRadius.circular(20.0),
+                                            gapPadding: 0,
+                                          ),
+                                        ),
+                                        validator: (String value) {
+                                          if(name.toLowerCase()==item.name.toLowerCase()){
+                                            return null;
+                                          } else if (value.isEmpty) {
+                                            return 'Name is a required filed.';
+                                          } else {
+                                            for(Item i in items){
+                                              if(i.name.toLowerCase() == value.toLowerCase()){
+                                                return "Name is already use.";
+                                              }
+                                            }
+                                            return null;
+                                          }
+                                        },
+                                        onChanged: (val){
+                                          name = val;
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(height: 15,),
+                                    SizedBox(
+                                      width: 280,
+                                      child: TextFormField(
+                                        initialValue: price.toString(),
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: <TextInputFormatter>[
+                                          // FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                        ],
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                        decoration: InputDecoration(
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(20.0),
+                                            gapPadding: 0,
+                                          ),
+                                          contentPadding: EdgeInsets.all(10),
+                                          labelText: "Price",
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
+                                            borderRadius: BorderRadius.circular(20.0),
+                                            gapPadding: 0,
+                                          ),
+                                          focusedErrorBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(color: Colors.red,width: 2),
+                                            borderRadius: BorderRadius.circular(20.0),
+                                            gapPadding: 0,
+                                          ),
+                                        ),
+                                        validator: (String value) {
+                                          if(double.parse(value, (e) => null) == null){//check numberic
+                                            return "invalid number format";
+                                          }else if (double.parse(value)<0) {
+                                            return 'price must be 0 or more';
+                                          }else {
+                                            return null;
+                                          }
+                                        },
+                                        onChanged: (val){
+                                          price = double.parse(val);
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(height: 15),
+                                    SizedBox(
+                                      width: 280,
+                                      child: TextFormField(
+                                        keyboardType: TextInputType.number,
+                                        initialValue: unit.toString(),
+                                        inputFormatters: <TextInputFormatter>[
+                                          FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                        ],
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                        decoration: InputDecoration(
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(20.0),
+                                            gapPadding: 0,
+                                          ),
+                                          contentPadding: EdgeInsets.all(10),
+                                          labelText: "Unit",
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
+                                            borderRadius: BorderRadius.circular(20.0),
+                                            gapPadding: 0,
+                                          ),
+                                          focusedErrorBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(color: Colors.red,width: 2),
+                                            borderRadius: BorderRadius.circular(20.0),
+                                            gapPadding: 0,
+                                          ),
+                                        ),
+                                        validator: (String value) {
+                                          if(double.parse(value, (e) => null) == null){//check numberic
+                                            return "invalid number format";
+                                          }else if (double.parse(value)<0) {
+                                            return 'unit must be 0 or more';
+                                          }else {
+                                            return null;
+                                          }
+                                        },
+                                        onChanged: (val){
+                                          unit = int.parse(val);
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    SizedBox(height: 20),
+                                    SizedBox(
+                                      width: 300.0,
+                                      height: 50,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(20.0)
+                                            )
+                                        ),
+                                        onPressed: () {
+                                          if (_formKey.currentState.validate()){
+                                            item.name = name;
+                                            for(Person p in item.payers){
+                                              p.pay -= item.getPricePerPerson();
+                                              p.pay += price*unit/item.payers.length;
+                                            }
+                                            item.rawPrice = price;
+                                            item.unit = unit;
+                                            Item.fullSort(items);
+                                            Navigator.of(context).pop();
+                                          }
+                                        },
+                                        child: Text(
+                                          "Save",
+                                          style: TextStyle(color: Color(0xFF682c0e),fontSize: 16),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 15),
+                                    SizedBox(
+                                      width: 300.0,
+                                      height: 50,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20.0),
+                                          ),
+                                          primary: Color(0xFF682c0e),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            item.removeItem();
+                                            items.remove(item);
+                                          });
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text(
+                                          "Delete",
+                                          style: TextStyle(color: Colors.white,fontSize: 16),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

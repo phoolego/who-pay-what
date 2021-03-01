@@ -59,6 +59,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
                   clipper: ArrowClipperUp(center: xPosition+(width/2)-MediaQuery.of(context).size.width*0.1),
                   child: Container(
                     decoration: BoxDecoration(
+                      border: Border.all(width: 0,color: Color(0xFFfc8621),),
                       color: Color(0xFFfc8621),
                     ),
                   ),
@@ -87,6 +88,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Color(0xFFfc8621),
+                      border: Border.all(width: 0,color: Color(0xFFfc8621),),
                     ),
                   ),
                 ),
@@ -104,6 +106,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
       child: Container(
         decoration: BoxDecoration(
           color: Color(0xFFfc8621),
+          border: Border.all(width: 0,color: Color(0xFFfc8621),),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -149,7 +152,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
   Widget PersonList(){
     return ListView.builder(
       itemCount: widget.localPeople.length,
-      padding: EdgeInsets.all(0),
+      padding: EdgeInsets.fromLTRB(5,0,5,0),
       itemBuilder: (context, index) => Card(
         color: Color(0xFF682c0e),
         shape: RoundedRectangleBorder(
