@@ -47,30 +47,32 @@ class HomeState extends State<Home> {
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(MediaQuery.of(context).size.height*0.12 - MediaQuery.of(context).padding.top),
           child: AppBar(
-            bottom: TabBar(
-              // isScrollable: true,
-              tabs: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height*0.115 - MediaQuery.of(context).padding.top,
-                  width: MediaQuery.of(context).size.width*0.5,
-                  child: Center(
-                    child: Text(
-                      "Who",
-                      style: TextStyle(fontSize: 24),
-                    )
-                  ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height*0.115 - MediaQuery.of(context).padding.top,
-                  width: MediaQuery.of(context).size.width*0.5,
-                  child: Center(
+            flexibleSpace:SafeArea(
+              child: TabBar(
+                // isScrollable: true,
+                tabs: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height*0.12 - MediaQuery.of(context).padding.top,
+                    width: MediaQuery.of(context).size.width*0.5,
+                    child: Center(
                       child: Text(
-                        "What",
+                        "Who",
                         style: TextStyle(fontSize: 24),
                       )
+                    ),
                   ),
-                ),
-              ],
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height*0.12 - MediaQuery.of(context).padding.top,
+                    width: MediaQuery.of(context).size.width*0.5,
+                    child: Center(
+                        child: Text(
+                          "What",
+                          style: TextStyle(fontSize: 24),
+                        )
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

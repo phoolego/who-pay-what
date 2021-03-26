@@ -59,16 +59,12 @@ class _CustomDropdownState extends State<CustomDropdown> {
                   clipper: ArrowClipperUp(center: xPosition+(width/2)-MediaQuery.of(context).size.width*0.1),
                   child: Container(
                     decoration: BoxDecoration(
-                      border: Border.all(width: 0,color: Color(0xFFfc8621),),
+                      border: Border.all(width: 20,color: Color(0xFFfc8621),),
                       color: Color(0xFFfc8621),
                     ),
                   ),
                 ),
               ),
-              // Container(
-              //   height: 20,
-              //   color: Color(0xFFfc8621),
-              // ),
               SizedBox(
                 height: MediaQuery.of(context).size.height*0.3,
                 width: MediaQuery.of(context).size.width*0.8,
