@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:who_pay_what/model/Item.dart';
 import 'package:who_pay_what/model/Person.dart';
 import 'package:who_pay_what/widgets/CustomDropdown.dart';
+import 'package:who_pay_what/widgets/What.dart';
+import 'package:who_pay_what/widgets/Who.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -30,6 +32,73 @@ class HomeState extends State<Home> {
       p.calculatePay(items);
     }
   }
+  addPerson(String name){
+    setState(() {
+      people.add(new Person(name: name, pay: 0));
+      people = Person.sortNameAfterAdd(people);
+    });
+  }
+  editPerson(Person person,String newName){
+    person.name = newName;
+    Person.fullSort(people);
+  }
+  deletePerson(Person person){
+    setState(() {
+      for(Item i in items){
+        if(i.payers.contains(person)){
+          for(Person p in i.payers){
+            p.pay -= i.getPricePerPerson();
+          }
+          i.payers.remove(person);
+          for(Person p in i.payers){
+            p.pay += i.getPricePerPerson();
+          }
+        }
+      }
+      people.remove(person);
+    });
+  }
+  addItem(String name,double price,int unit){
+    items.add(new Item(name: name,rawPrice: price,unit: unit));
+    Item.sortNameAfterAdd(items);
+  }
+  deleteItem(Item item){
+    item.removeItem();
+    items.remove(item);
+  }
+  editItem(Item item,String name,double price,int unit){
+    item.name = name;
+    for(Person p in item.payers){
+      p.pay -= item.getPricePerPerson();
+      p.pay += price*unit/item.payers.length;
+    }
+    item.rawPrice = price;
+    item.unit = unit;
+    Item.fullSort(items);
+  }
+  addPersonToItem(Item item,Person person){
+    setState(() {
+      for(Person p in item.payers){
+        p.pay-= item.calPrice()/item.payers.length;
+      }
+      item.payers.add(person);
+      for(Person p in item.payers){
+        p.pay+= item.calPrice()/item.payers.length;
+      }
+    });
+  }
+  deletePersonFromItem(Item item,Person person){
+    setState(() {
+      for(Person person in item.payers){
+        person.pay -= item.calPrice()/item.payers.length;
+      }
+      item.payers.remove(person);
+      for(Person person in item.payers){
+        person.pay += item.calPrice()/item.payers.length;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -41,6 +110,16 @@ class HomeState extends State<Home> {
     // for (int i = 0; i < s.length; i++) {
     //   print("Code unit for ${s[i]} is ${s.codeUnitAt(i)}");
     // }
+    Map operation = {
+      "addPerson" : addPerson,
+      "editPerson" : editPerson,
+      "deletePerson": deletePerson,
+      "addItem":addItem,
+      "deleteItem":deleteItem,
+      "editItem":editItem,
+      "addPersonToItem":addPersonToItem,
+      "deletePersonFromItem":deletePersonFromItem
+    };
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -80,1035 +159,15 @@ class HomeState extends State<Home> {
           children: [
             Container(
               color: Color(0xFFf9e0ae),
-              child: Who(),
+              child: Who(items: items,people: people,operation: operation,),
             ),
             Container(
               color: Color(0xFFf9e0ae),
-              child: What(),
+              child: What(operation: operation,items: items,people: people,),
             ),
           ],
         ),
       ),
     );
   }
-
-  Widget Who(){
-    var device = MediaQuery.of(context);
-    return Column(
-      children: [
-        SizedBox(
-          height: device.size.height*0.78,
-          width: device.size.width,
-          child: people.length==0 ? Center(
-            child: Text(
-              "Add who need to pay.",
-              style: TextStyle(
-                  color: Color(0xFF682c0e),
-                  fontSize: 16
-              ),
-            ),
-          ):
-          ListView.builder(
-              itemCount: people.length,
-              itemBuilder: (context, index) => Column(
-                children: [
-                  SizedBox(
-                    height: index==0? 15:0,
-                  ),
-                  Container(
-                    width: device.size.width*0.9,
-                    padding: EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: Color(0xFFc24914),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              InkWell(
-                                child: Icon(Icons.edit,size: 15,color: Colors.white,),
-                                onTap: (){
-                                  editNameAlert(context, people[index]);
-                                },
-                              ),
-                              Container(
-                                width:device.size.width*0.9-45,
-                                child: Text(
-                                  people[index].name,
-                                  style: TextStyle(
-                                    color: Color(0xFFFFFFFF),
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                people[index].getPay().toString(),
-                                style: TextStyle(
-                                    color: Color(0xFFFFFFFF),
-                                    fontSize: 16
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                ],
-              ),
-          ),
-        ),
-        SizedBox(
-          height: device.size.height*0.1,
-          child: Center(
-            child: SizedBox(
-              width: device.size.width*0.9,
-              height: device.size.height*0.08,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0)
-                    )
-                ),
-                onPressed: () {
-                  inputNameAlert(context);
-                },
-                child: Text(
-                  "Add Person name",
-                  style: TextStyle(color: Color(0xFF682c0e),fontSize: 18),
-                ),
-              ),
-            )
-          ),
-        ),
-      ],
-    );
-  }
-  inputNameAlert(BuildContext context){
-    String name;
-    final _formKey = GlobalKey<FormState>();
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            backgroundColor:Color(0xFFf9e0ae),
-            shape: RoundedRectangleBorder(
-                borderRadius:BorderRadius.circular(20.0)
-            ), //this right here
-            child: Container(
-              height: MediaQuery.of(context).size.height*0.3,
-              child: Padding(
-                padding: EdgeInsets.all(15.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Add new name",style: TextStyle(color: Color(0xFF682c0e)),),
-                        SizedBox(
-                          width: 30,
-                          child: MaterialButton(
-                            padding: EdgeInsets.all(0),
-                            child: Icon(Icons.close),
-                            onPressed: (){
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    Form(
-                      key: _formKey,
-                      child: Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(
-                              width: 280,
-                              child: TextFormField(
-                                style: TextStyle(
-                                  fontSize: 18,
-                                ),
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    gapPadding: 0,
-                                  ),
-                                  contentPadding: EdgeInsets.all(10),
-                                  labelText: "Name",
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    gapPadding: 0,
-                                  ),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.red,width: 2),
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    gapPadding: 0,
-                                  ),
-                                ),
-                                validator: (String value) {
-                                  if (value.isEmpty) {
-                                    return 'Name is a required filed.';
-                                  } else {
-                                    for(Person p in people){
-                                      if(p.name.toLowerCase() == value.toLowerCase()){
-                                        return "Name is already use.";
-                                      }
-                                    }
-                                    return null;
-                                  }
-                                },
-                                onChanged: (val){
-                                  name = val;
-                                },
-                              ),
-                            ),
-                            Column(
-                              children: [
-                                SizedBox(height: 20),
-                                SizedBox(
-                                  width: 300.0,
-                                  height: 50,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20.0)
-                                        )
-                                    ),
-                                    onPressed: () {
-                                      if (_formKey.currentState.validate()){
-                                        people.add(new Person(name: name,pay: 0));
-                                        people = Person.sortNameAfterAdd(people);
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
-                                    child: Text(
-                                      "Save",
-                                      style: TextStyle(color: Color(0xFF682c0e),fontSize: 16),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        });
-  }
-  editNameAlert(BuildContext context,Person person){
-    String name=person.name;
-    final _formKey = GlobalKey<FormState>();
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor:Color(0xFFf9e0ae),
-          shape: RoundedRectangleBorder(
-              borderRadius:BorderRadius.circular(20.0)
-          ), //this right here
-          child: Container(
-            height: MediaQuery.of(context).size.height*0.4,
-            child: Padding(
-              padding: EdgeInsets.all(15.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Edit name",style: TextStyle(color: Color(0xFF682c0e)),),
-                      SizedBox(
-                        width: 30,
-                        child: MaterialButton(
-                          padding: EdgeInsets.all(0),
-                          child: Icon(Icons.close),
-                          onPressed: (){
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  Form(
-                    key: _formKey,
-                    child: Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(
-                            width: 280,
-                            child: TextFormField(
-                              style: TextStyle(
-                                fontSize: 18,
-                              ),
-                              initialValue: name,
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(10),
-                                labelText: "Name",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
-                                ),
-                                focusedErrorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red,width: 2),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  gapPadding: 0,
-                                ),
-                              ),
-                              validator: (String value) {
-                                if(name.toLowerCase()==person.name.toLowerCase()){
-                                  return null;
-                                } else if (value.isEmpty) {
-                                  return 'Name is a required filed.';
-                                } else {
-                                  for(Person p in people){
-                                    if(p.name.toLowerCase() == value.toLowerCase()){
-                                      return "Name is already use.";
-                                    }
-                                  }
-                                  return null;
-                                }
-                              },
-                              onChanged: (val){
-                                name = val;
-                              },
-                            ),
-                          ),
-                          Column(
-                            children: [
-                              SizedBox(height: 20),
-                              SizedBox(
-                                width: 300.0,
-                                height: 50,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(20.0)
-                                      )
-                                  ),
-                                  onPressed: () {
-                                    if (_formKey.currentState.validate()){
-                                      person.name = name;
-                                      Person.fullSort(people);
-                                      Navigator.of(context).pop();
-                                    }
-                                  },
-                                  child: Text(
-                                    "Save",
-                                    style: TextStyle(color: Color(0xFF682c0e),fontSize: 16),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 15),
-                              SizedBox(
-                                width: 300.0,
-                                height: 50,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                    ),
-                                    primary: Color(0xFF682c0e),
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      for(Item i in items){
-                                        if(i.payers.contains(person)){
-                                          for(Person p in i.payers){
-                                            p.pay -= i.getPricePerPerson();
-                                          }
-                                          i.payers.remove(person);
-                                          for(Person p in i.payers){
-                                            p.pay += i.getPricePerPerson();
-                                          }
-                                        }
-                                      }
-                                      people.remove(person);
-                                    });
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text(
-                                    "Delete",
-                                    style: TextStyle(color: Colors.white,fontSize: 16),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }
-    );
-  }
-
-  Widget What(){
-    var device = MediaQuery.of(context);
-    return Column(
-      children: [
-        SizedBox(
-          height: device.size.height*0.78,
-          width: device.size.width,
-          child: items.length==0 ? Center(
-            child: Text(
-              "What things you buy",
-              style: TextStyle(
-                  color: Color(0xFF682c0e),
-                  fontSize: 16
-              ),
-            ),
-          ):
-          ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) => Column(
-              children: [
-                SizedBox(
-                  height: index==0? 15:0,
-                ),
-                Container(
-                  width: device.size.width*0.9,
-                  padding: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: Color(0xFFc24914),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            InkWell(
-                              child: Icon(Icons.edit,size: 15,color: Colors.white,),
-                              onTap: (){
-                                editItemAlert(context, items[index]);
-                              },
-                            ),
-                            Container(
-                              width:device.size.width*0.9-45,
-                              child: Text(
-                                items[index].name,
-                                style: TextStyle(
-                                  color: Color(0xFFFFFFFF),
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              items[index].unit.toString() + " Unit",
-                              style: TextStyle(
-                                  color: Color(0xFFFFFFFF),
-                                  fontSize: 16
-                              ),
-                            ),
-                            SizedBox(width: 15,),
-                            Text(
-                              items[index].getPrice().toString(),
-                              style: TextStyle(
-                                  color: Color(0xFFFFFFFF),
-                                  fontSize: 16
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              items[index].getPricePerPerson().toString()+ " per person",
-                              style: TextStyle(
-                                  color: Color(0xFFFFFFFF),
-                                  fontSize: 16
-                              ),
-                            ),
-                          ],
-                        ),
-                        Wrap(
-                          spacing: 5,
-                          runSpacing: 5,
-                          children: buildNameTag(items[index].payers,items[index]),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-              ],
-            ),
-          ),
-        ),
-        SizedBox(
-          height: device.size.height*0.1,
-          child: Center(
-              child: SizedBox(
-                width: device.size.width*0.9,
-                height: device.size.height*0.08,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0)
-                      )
-                  ),
-                  onPressed: () {
-                    inputItemAlert(context);
-                  },
-                  child: Text(
-                    "Add Item",
-                    style: TextStyle(color: Color(0xFF682c0e),fontSize: 18),
-                  ),
-                ),
-              )
-          ),
-        ),
-      ],
-    );
-  }
-  inputItemAlert(BuildContext context){
-    String name;
-    double price;
-    int unit=1;
-    final _formKey = GlobalKey<FormState>();
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            backgroundColor:Color(0xFFf9e0ae),
-            shape: RoundedRectangleBorder(
-                borderRadius:BorderRadius.circular(20.0)
-            ), //this right here
-            child: Container(
-              height: MediaQuery.of(context).size.height*0.5,
-              child: Padding(
-                padding: EdgeInsets.all(15.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Add new item",style: TextStyle(color: Color(0xFF682c0e)),),
-                        SizedBox(
-                          width: 30,
-                          child: MaterialButton(
-                            padding: EdgeInsets.all(0),
-                            child: Icon(Icons.close),
-                            onPressed: (){
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    Form(
-                      key: _formKey,
-                      child: Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: [
-                                SizedBox(
-                                  width: 280,
-                                  child: TextFormField(
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                    decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(20.0),
-                                        gapPadding: 0,
-                                      ),
-                                      contentPadding: EdgeInsets.all(10),
-                                      labelText: "Name",
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                        borderRadius: BorderRadius.circular(20.0),
-                                        gapPadding: 0,
-                                      ),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.red,width: 2),
-                                        borderRadius: BorderRadius.circular(20.0),
-                                        gapPadding: 0,
-                                      ),
-                                    ),
-                                    validator: (String value) {
-                                      if (value.isEmpty) {
-                                        return 'Name is a required filed.';
-                                      } else {
-                                        for(Person p in people){
-                                          if(p.name.toLowerCase() == value.toLowerCase()){
-                                            return "Name is already use.";
-                                          }
-                                        }
-                                        return null;
-                                      }
-                                    },
-                                    onChanged: (val){
-                                      name = val;
-                                    },
-                                  ),
-                                ),
-                                SizedBox(height: 15),
-                                SizedBox(
-                                  width: 280,
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: <TextInputFormatter>[
-                                      // FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
-                                    ],
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                    decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(20.0),
-                                        gapPadding: 0,
-                                      ),
-                                      contentPadding: EdgeInsets.all(10),
-                                      labelText: "Price",
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                        borderRadius: BorderRadius.circular(20.0),
-                                        gapPadding: 0,
-                                      ),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.red,width: 2),
-                                        borderRadius: BorderRadius.circular(20.0),
-                                        gapPadding: 0,
-                                      ),
-                                    ),
-                                    validator: (String value) {
-                                      if(double.parse(value, (e) => null) == null){//check numberic
-                                        return "invalid number format";
-                                      }else if (double.parse(value)<0) {
-                                        return 'price must be 0 or more';
-                                      }else {
-                                        return null;
-                                      }
-                                    },
-                                    onChanged: (val){
-                                      price = double.parse(val);
-                                    },
-                                  ),
-                                ),
-                                SizedBox(height: 15),
-                                SizedBox(
-                                  width: 280,
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.number,
-                                    initialValue: unit.toString(),
-                                    inputFormatters: <TextInputFormatter>[
-                                      FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
-                                    ],
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                    decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(20.0),
-                                        gapPadding: 0,
-                                      ),
-                                      contentPadding: EdgeInsets.all(10),
-                                      labelText: "Unit",
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                        borderRadius: BorderRadius.circular(20.0),
-                                        gapPadding: 0,
-                                      ),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.red,width: 2),
-                                        borderRadius: BorderRadius.circular(20.0),
-                                        gapPadding: 0,
-                                      ),
-                                    ),
-                                    validator: (String value) {
-                                      if(double.parse(value, (e) => null) == null){//check numberic
-                                        return "invalid number format";
-                                      }else if (double.parse(value)<0) {
-                                        return 'unit must be 0 or more';
-                                      }else {
-                                        return null;
-                                      }
-                                    },
-                                    onChanged: (val){
-                                      unit = int.parse(val);
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                SizedBox(height: 20),
-                                SizedBox(
-                                  width: 300.0,
-                                  height: 50,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20.0)
-                                        )
-                                    ),
-                                    onPressed: () {
-                                      if (_formKey.currentState.validate()){
-                                        items.add(new Item(name: name,rawPrice: price,unit: unit));
-                                        Item.sortNameAfterAdd(items);
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
-                                    child: Text(
-                                      "Save",
-                                      style: TextStyle(color: Color(0xFF682c0e),fontSize: 16),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        });
-  }
-  editItemAlert(BuildContext context,Item item){
-    String name=item.name;
-    double price = item.rawPrice;
-    int unit = item.unit;
-    final _formKey = GlobalKey<FormState>();
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            backgroundColor:Color(0xFFf9e0ae),
-            shape: RoundedRectangleBorder(
-                borderRadius:BorderRadius.circular(20.0)
-            ),
-            child: SingleChildScrollView(
-              child: Container(
-                height: MediaQuery.of(context).size.height*0.60,
-                child: Padding(
-                  padding: EdgeInsets.all(15.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text("Edit Item detail",style: TextStyle(color: Color(0xFF682c0e)),),
-                          SizedBox(
-                            width: 30,
-                            child: MaterialButton(
-                              padding: EdgeInsets.all(0),
-                              child: Icon(Icons.close),
-                              onPressed: (){
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      Form(
-                        key: _formKey,
-                          child: Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  children: [
-                                    SizedBox(
-                                      width: 280,
-                                      child: TextFormField(
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                        ),
-                                        initialValue: name,
-                                        decoration: InputDecoration(
-                                          contentPadding: EdgeInsets.all(10),
-                                          labelText: "Name",
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(20.0),
-                                            gapPadding: 0,
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                            borderRadius: BorderRadius.circular(20.0),
-                                            gapPadding: 0,
-                                          ),
-                                          focusedErrorBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(color: Colors.red,width: 2),
-                                            borderRadius: BorderRadius.circular(20.0),
-                                            gapPadding: 0,
-                                          ),
-                                        ),
-                                        validator: (String value) {
-                                          if(name.toLowerCase()==item.name.toLowerCase()){
-                                            return null;
-                                          } else if (value.isEmpty) {
-                                            return 'Name is a required filed.';
-                                          } else {
-                                            for(Item i in items){
-                                              if(i.name.toLowerCase() == value.toLowerCase()){
-                                                return "Name is already use.";
-                                              }
-                                            }
-                                            return null;
-                                          }
-                                        },
-                                        onChanged: (val){
-                                          name = val;
-                                        },
-                                      ),
-                                    ),
-                                    SizedBox(height: 15,),
-                                    SizedBox(
-                                      width: 280,
-                                      child: TextFormField(
-                                        initialValue: price.toString(),
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: <TextInputFormatter>[
-                                          // FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
-                                        ],
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                        ),
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(20.0),
-                                            gapPadding: 0,
-                                          ),
-                                          contentPadding: EdgeInsets.all(10),
-                                          labelText: "Price",
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                            borderRadius: BorderRadius.circular(20.0),
-                                            gapPadding: 0,
-                                          ),
-                                          focusedErrorBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(color: Colors.red,width: 2),
-                                            borderRadius: BorderRadius.circular(20.0),
-                                            gapPadding: 0,
-                                          ),
-                                        ),
-                                        validator: (String value) {
-                                          if(double.parse(value, (e) => null) == null){//check numberic
-                                            return "invalid number format";
-                                          }else if (double.parse(value)<0) {
-                                            return 'price must be 0 or more';
-                                          }else {
-                                            return null;
-                                          }
-                                        },
-                                        onChanged: (val){
-                                          price = double.parse(val);
-                                        },
-                                      ),
-                                    ),
-                                    SizedBox(height: 15),
-                                    SizedBox(
-                                      width: 280,
-                                      child: TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        initialValue: unit.toString(),
-                                        inputFormatters: <TextInputFormatter>[
-                                          FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
-                                        ],
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                        ),
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(20.0),
-                                            gapPadding: 0,
-                                          ),
-                                          contentPadding: EdgeInsets.all(10),
-                                          labelText: "Unit",
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(color: Theme.of(context).primaryColor,width: 2),
-                                            borderRadius: BorderRadius.circular(20.0),
-                                            gapPadding: 0,
-                                          ),
-                                          focusedErrorBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(color: Colors.red,width: 2),
-                                            borderRadius: BorderRadius.circular(20.0),
-                                            gapPadding: 0,
-                                          ),
-                                        ),
-                                        validator: (String value) {
-                                          if(double.parse(value, (e) => null) == null){//check numberic
-                                            return "invalid number format";
-                                          }else if (double.parse(value)<0) {
-                                            return 'unit must be 0 or more';
-                                          }else {
-                                            return null;
-                                          }
-                                        },
-                                        onChanged: (val){
-                                          unit = int.parse(val);
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    SizedBox(height: 20),
-                                    SizedBox(
-                                      width: 300.0,
-                                      height: 50,
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(20.0)
-                                            )
-                                        ),
-                                        onPressed: () {
-                                          if (_formKey.currentState.validate()){
-                                            item.name = name;
-                                            for(Person p in item.payers){
-                                              p.pay -= item.getPricePerPerson();
-                                              p.pay += price*unit/item.payers.length;
-                                            }
-                                            item.rawPrice = price;
-                                            item.unit = unit;
-                                            Item.fullSort(items);
-                                            Navigator.of(context).pop();
-                                          }
-                                        },
-                                        child: Text(
-                                          "Save",
-                                          style: TextStyle(color: Color(0xFF682c0e),fontSize: 16),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 15),
-                                    SizedBox(
-                                      width: 300.0,
-                                      height: 50,
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20.0),
-                                          ),
-                                          primary: Color(0xFF682c0e),
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            item.removeItem();
-                                            items.remove(item);
-                                          });
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text(
-                                          "Delete",
-                                          style: TextStyle(color: Colors.white,fontSize: 16),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        }
-    );
-  }
-
-  buildNameTag(List<Person> person,Item item){
-    List<Widget> tag = new List<Widget>();
-    for(Person p in person){
-      Widget w = Container(
-        padding: EdgeInsets.fromLTRB(5,2,5,2),
-        decoration: BoxDecoration(
-          color: Color(0xFF682c0e),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: FittedBox(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                p.name,
-                style: TextStyle(
-                  color: Color(0xFFf9e0ae),
-                  fontSize: 15,
-                ),
-              ),
-              InkWell(
-                child: Icon(Icons.close,size: 15,color: Color(0xFFf9e0ae),),
-                onTap: (){
-                  setState(() {
-                    for(Person person in item.payers){
-                      person.pay -= item.calPrice()/item.payers.length;
-                    }
-                    item.payers.remove(p);
-                    for(Person person in item.payers){
-                      person.pay += item.calPrice()/item.payers.length;
-                    }
-                  });
-                },
-              ),
-            ],
-          ),
-        ),
-      );
-      tag.add(w);
-    }
-    tag.add(CustomDropdown(text: "Add",item: item,people: people,parent: this,));
-    return tag;
-  }
-
 }

@@ -8,8 +8,8 @@ class CustomDropdown extends StatefulWidget {
   List<Person> people;
   List<Person> localPeople = new List<Person>();
   Item item;
-  HomeState parent;
-  CustomDropdown({Key key, @required this.text, this.people, this.item,this.parent}) : super(key: key);
+  final addPersonToItem;
+  CustomDropdown({Key key, @required this.text, this.people, this.item,this.addPersonToItem}) : super(key: key);
 
   @override
   _CustomDropdownState createState() => _CustomDropdownState();
@@ -162,16 +162,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
             ),
           ),
           onTap: (){
-            print(widget.localPeople[index].name);
-            widget.parent.setState(() {
-              for(Person p in widget.item.payers){
-                p.pay-= widget.item.calPrice()/widget.item.payers.length;
-              }
-              widget.item.payers.add(widget.localPeople[index]);
-              for(Person p in widget.item.payers){
-                p.pay+= widget.item.calPrice()/widget.item.payers.length;
-              }
-            });
+            widget.addPersonToItem(widget.item,widget.localPeople[index]);
             setState(() {
               floatingBackground.remove();
               floatingDropdown.remove();
