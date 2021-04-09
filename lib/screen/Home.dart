@@ -59,22 +59,28 @@ class HomeState extends State<Home> {
     });
   }
   addItem(String name,double price,int unit){
-    items.add(new Item(name: name,rawPrice: price,unit: unit));
-    Item.sortNameAfterAdd(items);
+    setState(() {
+      items.add(new Item(name: name,rawPrice: price,unit: unit));
+      Item.sortNameAfterAdd(items);
+    });
   }
   deleteItem(Item item){
-    item.removeItem();
-    items.remove(item);
+    setState(() {
+      item.removeItem();
+      items.remove(item);
+    });
   }
   editItem(Item item,String name,double price,int unit){
-    item.name = name;
-    for(Person p in item.payers){
-      p.pay -= item.getPricePerPerson();
-      p.pay += price*unit/item.payers.length;
-    }
-    item.rawPrice = price;
-    item.unit = unit;
-    Item.fullSort(items);
+    setState(() {
+      item.name = name;
+      for(Person p in item.payers){
+        p.pay -= item.getPricePerPerson();
+        p.pay += price*unit/item.payers.length;
+      }
+      item.rawPrice = price;
+      item.unit = unit;
+      Item.fullSort(items);
+    });
   }
   addPersonToItem(Item item,Person person){
     setState(() {
@@ -163,7 +169,7 @@ class HomeState extends State<Home> {
             ),
             Container(
               color: Color(0xFFf9e0ae),
-              child: What(operation: operation,items: items,people: people,),
+              child: What(items: items,people: people,operation: operation),
             ),
           ],
         ),
